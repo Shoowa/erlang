@@ -7,7 +7,7 @@ go() ->
   receive
     {_PID, MSG} ->
       io:format("~w~n", [MSG])
-    end.
+  end.
 
 loop() ->
   receive
@@ -26,8 +26,8 @@ printerFunction() ->
 		{print, MSG} ->
 			io:format("~w~n", [MSG]),
 			printerFunction();
-			stop ->
-				true
+		stop ->
+			true
 	end.
 	
 print(Term) ->
