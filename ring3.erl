@@ -11,8 +11,14 @@ nodeMessenger() ->
 			io:format("Last node: ~w, and the message: ~w~n", [self(), Message]),
 			hd(NodeList) ! {info, tl(NodeList), NodeList, M-1, Message},
 			nodeMessenger();
-		{info, _, _, 0, _} ->
-			io:format("The end.~n")
+		{info, _, [TopNode|RemainingPIDs], 0, _} ->
+			TopNode ! {quit, RemainingPIDs},
+			nodeMessenger();
+		{quit, [Next|RemainingPIDs]} ->
+			Next ! {quit, RemainingPIDs},
+			true;
+		{quit, []} ->
+			true
 	end.
 
 start(M, N, Message) ->
