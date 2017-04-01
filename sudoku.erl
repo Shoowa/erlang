@@ -1,5 +1,5 @@
 -module(sudoku).
--export([fetch_good_sudoku/0, fetch_bad_sudoku/0, sum45/1, create_column/1, create_tail_grid/1, nine_numbers/1, check_columns/1]).
+-export([fetch_good_sudoku/0, fetch_bad_sudoku/0, sum45/1, create_column/1, create_tail_grid/1, nine_numbers/1, check_columns/1, check_rows/1]).
 
 -type grid() :: list(list(integer())).
 
@@ -62,6 +62,7 @@ create_column(Grid) ->
 create_tail_grid(Grid) ->
     [ tl(X) || X <- Grid ]. 
 
+%% Recursively inspect each column of the grid for digits 1 through 9. Return TRUE and continue inspecting for the ultimate truth, or cease and return FALSE upon discovering a column doesn't contain all digits between 1 and 9.
 -spec check_columns(Grid :: grid()) -> boolean().
 check_columns([[],[],[],[],[],[],[],[],[]]) ->
     true;
@@ -74,4 +75,15 @@ check_columns(Grid) ->
         false ->
             io:format("Failure! The column lacks nine unique digits.~n"),
             false
+    end.
+
+%% Check each row of a grid for the digits 1 through 9. If any row lacks all nine digits, return FALSE.
+-spec check_rows(Grid :: grid()) -> boolean().
+check_rows(Grid) ->
+    Outcome = [nine_numbers(X) || X <- Grid],
+    case lists:member(false, Outcome) of
+        true ->
+            false;
+        false ->
+            true
     end.
