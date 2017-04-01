@@ -1,5 +1,5 @@
 -module(sudoku).
--export([fetch_good_sudoku/0, fetch_bad_sudoku/0, sum45/1, create_column/1, create_tail_grid/1, nine_numbers/1, check_columns/1, check_rows/1]).
+-export([fetch_good_sudoku/0, fetch_bad_sudoku/0, is_sudoku_complete/1]).
 
 -type grid() :: list(list(integer())).
 
@@ -43,14 +43,13 @@ nine_numbers(N, Line) when N > 0 ->
         true ->
             nine_numbers(N-1, Line);
         false ->
-            io:format("Failure! The list lacks nine unique digits~n"),
             false
     end.
 
 %% The sum of 1 through 9 is 45. Return TRUE or FALSE if a list, ideally composed of digits 1 through 9, adds up to 45.
--spec sum45(Line :: list(integer())) -> boolean().
-sum45(Line) ->
-    lists:sum(Line) =:= 45.
+%-spec sum45(Line :: list(integer())) -> boolean().
+%sum45(Line) ->
+%    lists:sum(Line) =:= 45.
 
 %% Peels the head off each list in a Sudoku grid composed of nine lists, then produces a new list from those nine heads.
 -spec create_column(Grid :: grid()) -> list(integer()).
@@ -73,7 +72,6 @@ check_columns(Grid) ->
             LesserGrid = create_tail_grid(Grid),
             check_columns(LesserGrid);
         false ->
-            io:format("Failure! The column lacks nine unique digits.~n"),
             false
     end.
 
@@ -87,3 +85,16 @@ check_rows(Grid) ->
         false ->
             true
     end.
+
+%% Accepts one sudoku grid, and passes two boolean values into a pattern matching function to provide the answer.
+-spec is_sudoku_complete(Grid :: grid()) -> boolean().
+is_sudoku_complete(Grid) ->
+    RowAnswer = check_rows(Grid),
+    ColumnAnswer = check_columns(Grid),
+    is_sudoku_complete(RowAnswer, ColumnAnswer).
+
+-spec is_sudoku_complete(Row :: boolean(), Column :: boolean()) -> boolean().
+is_sudoku_complete(true, true) ->
+    true;
+is_sudoku_complete(_, _) ->
+    false.
